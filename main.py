@@ -67,6 +67,9 @@ class Item:
                 result_items.append(item)
         return result_items
 
+    def find(self, id):
+        Item.__get_item_by_path(self, f"{__item_folder__}/{id}.db")
+
 def item_create(name, price, selling_price):
     item = Item()
     item.name = name
@@ -84,11 +87,17 @@ def item_search(key,value):
     results = item.search(key,value)
     pprint(results)
 
+def item_view(id):
+    item=Item()
+    item.find(id)
+    print(item.id,item.name,item.price,item.selling_price)
+
 if __name__ == "__main__":
     section_name=input("Enter Section Name(Item/Order/Customer)")
 
     if section_name == "Item":
-        sub_section_item=input("Plz enter View/Save/Serach")
+        sub_section_item=input("Plz enter All/Save/Serach/View")
+
         if sub_section_item == "Save":
             print("Plz Enter Item Details:-")
             item_name=input("Item Name")
@@ -96,13 +105,18 @@ if __name__ == "__main__":
             item_selling_price=input("Item Selling Price")
             item_create(item_name,item_price,item_selling_price)
 
-        elif sub_section_item == "View":
+        elif sub_section_item == "All":
             item_all()
 
         elif sub_section_item== "Search":
             key=input("Key")
             value=input("Value")
             item_search(key,value)
+
+        elif sub_section_item== "View":
+            id=input("Plz input Id")
+            item_view(id)
+
 
 
     if section_name == "Order":

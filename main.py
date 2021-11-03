@@ -1,16 +1,15 @@
-
-__item_last_id__=f"db/itemIdDerectory/item_last_id.db"
-__item_folder__="db/item"
-__customer_folder="db/cutomer"
-__customer_last_id__="db/customerIdDerectory/customer_last_id.db"
 import json
 import os
 from pprint import pprint
 
+__item_last_id__=f"db/itemIdDerectory/item_last_id.db"
+__item_folder__="db/item"
+__customer_folder__= "db/cutomer"
+__customer_last_id__="db/customerIdDerectory/customer_last_id.db"
+__order_folder__="db/order"
+__order_last_id__="db/orderIdDerectory/order_last_id.db"
 
 class Item:
-
-
 
     def save(self):
         if os.path.exists(__item_last_id__):
@@ -106,6 +105,96 @@ class Customer:
         with open(f"db/customerIdDerectory/customer_last_id.db","w") as customerLastId:
             json.dump(_last_id,customerLastId)
 
+    def all(self):
+        customer_file_names= os.listdir(__customer_folder__)
+        customers=[]
+        for customer_file_name in customer_file_names:
+            customer =Customer()
+            Customer.__get_customer_by_path(
+                customer,f"{__customer_folder__}/{customer_file_name}")
+            customers.append(customer)
+        return customers
+
+
+    def __get_customer_by_path(customer, path):
+        with open(path, "r") as customer_file:
+            _data_ = json.load(customer_file)
+
+    def search(self, key, value):
+        customers = self.all()
+        result_customers = []
+        for customer in customers:
+            customer_value = getattr(customer, key)
+            print(customer_value)
+            if customer_value == value:
+                result_customers.append(customer)
+        return result_customers
+
+    def find(self, id):
+        Customer.__get_customer_by_path(self, f"{__customer_folder__}/{id}.db")
+
+
+
+class Order:
+    def save(self):
+        if os.path.exists(__order_last_id__):
+            with open(f"db/orderIdDerectory/order_last_id.db", "r") as orderLastId:
+                last_id_order = json.load(orderLastId)
+                self.last_id = last_id_order["id"] + 1
+
+                if self.last_id == 1:
+                    id=1
+                else:
+                     id=self.last_id
+        else:
+            id=1
+        _data_ = {
+            "id": id,
+            "itemId": self.itemId,
+            "itemName": self.itemName,
+            "totQTY": self.totQTY,
+            "totPrice":self.totPrice
+        }
+        with open(f"db/order/{id}.db","w") as orderFile:
+            print(_data_)
+            json.dump(_data_,orderFile)
+
+        _last_id ={
+            "id":id
+        }
+
+        with open(f"db/orderIdDerectory/order_last_id.db","w") as orderLastId:
+            json.dump(_last_id,orderLastId)
+
+
+    def all(self):
+        order_file_names= os.listdir(__order_folder__)
+        orders=[]
+        for order_file_name in order_file_names:
+            order =Order()
+            Item.__get_order_by_path(
+                order,f"{__order_folder__}/{order_file_names}")
+            orders.append(order)
+        return orders
+
+
+    def __get_order_by_path(order, path):
+        with open(path, "r") as order_file:
+            _data_ = json.load(order_file)
+
+    def search(self, key, value):
+        orders = self.all()
+        result_orders = []
+        for order in orders:
+            order_value = getattr(order, key)
+            print(order_value)
+            if order_value == value:
+                result_orders.append(order)
+        return result_orders
+
+    def find(self, id):
+        Order.__get_order_by_path(self, f"{__order_folder__}/{id}.db")
+
 
 def item_create(name, price, selling_price):
     item = Item()
@@ -136,6 +225,49 @@ def customer_create(name,address,tel):
     customer.address= address
     customer.tel=tel
     customer.save()
+
+def customer_all():
+    customer = Customer()
+    customers = customer.all()
+    pprint(customers)
+
+def customer_search(key,value):
+    customer = Customer()
+    results = customer.search(key,value)
+    pprint(results)
+
+def customer_view(id):
+    customer = Customer()
+    customer.find(id)
+    pprint(customer.name.__str__)
+
+
+def order_create(itemId,itemName,totQTY,totPrice):
+    order = Order()
+    order.itemId = itemId
+    order.itemName = itemName
+    order.totQTY=totQTY
+    order.totPrice=totPrice
+    order.save()
+
+
+def order_all():
+    order = Order()
+    orders = order.all()
+    pprint(orders)
+
+
+def order_search(key, value):
+    order = Order()
+    results = order.search(key, value)
+    pprint(results)
+
+
+def order_view(id):
+    order = Order()
+    order.find(id)
+    pprint(order.id.__str__)
+
 
 if __name__ == "__main__":
     section_name=input("Enter Section Name(Item/Order/Customer)")
@@ -168,13 +300,25 @@ if __name__ == "__main__":
         print("Order")
 
     if section_name == "Customer":
-        sub_section_item=input("Plz enter All/Create/Serach/View")
+        sub_section_customer=input("Plz enter All/Create/Serach/View")
 
-        if sub_section_item == "Create":
+        if sub_section_customer == "Create":
             print("Plz Enter Customer Details:-")
             customer_name=input("Customer Name")
             customer_address=input("Customer Address")
             customer_tel=input("Customer Tel")
             customer_create(customer_name,customer_address,customer_tel)
+
+        elif sub_section_customer == "All":
+            customer_all()
+
+        elif sub_section_customer== "Search":
+            key=input("Key")
+            value=input("Value")
+            customer_search(key,value)
+
+        elif sub_section_customer== "View":
+            id=input("Plz input Id")
+            customer_view(id)
 
 

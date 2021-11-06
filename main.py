@@ -4,10 +4,10 @@ from pprint import pprint
 
 __item_last_id__=f"db/itemIdDerectory/item_last_id.db"
 __item_folder__="db/item"
-__customer_folder__= "db/cutomer"
+__customer_folder__= "db/customer"
 __customer_last_id__="db/customerIdDerectory/customer_last_id.db"
 __order_folder__="db/order"
-__order_last_id__="db/orderIdDerectory/order_last_id.db"
+__order_last_id__=f"db/orderIdDerectory/order_last_id.db"
 
 class Item:
 
@@ -47,21 +47,27 @@ class Item:
         items=[]
         for item_file_name in item_file_names:
             item =Item()
-            Item.__get_item_by_path(
+            values=Item.__get_item_by_path(
                 item,f"{__item_folder__}/{item_file_name}")
-            items.append(item)
+            items.append(values)
         return items
 
 
     def __get_item_by_path(item, path):
         with open(path, "r") as item_file:
             _data_ = json.load(item_file)
+            item.id= _data_["id"]
+            item.name=_data_["name"]
+            item.price=_data_["price"]
+            item.sellingPrice=_data_["sellingPrice"]
+            return _data_
 
     def search(self, key, value):
         items = self.all()
         result_items = []
         for item in items:
-            item_value = getattr(item, key)
+            print(item["id"])
+            item_value = getattr(item, key.__str__())
             print(item_value)
             if item_value == value:
                 result_items.append(item)
@@ -110,15 +116,20 @@ class Customer:
         customers=[]
         for customer_file_name in customer_file_names:
             customer =Customer()
-            Customer.__get_customer_by_path(
+            values=Customer.__get_customer_by_path(
                 customer,f"{__customer_folder__}/{customer_file_name}")
-            customers.append(customer)
+            customers.append(values)
         return customers
 
 
     def __get_customer_by_path(customer, path):
         with open(path, "r") as customer_file:
             _data_ = json.load(customer_file)
+            customer.id=_data_["id"]
+            customer.name=_data_["name"]
+            customer.address=_data_["address"]
+            customer.tel=_data_["tel"]
+            return _data_
 
     def search(self, key, value):
         customers = self.all()
@@ -172,15 +183,16 @@ class Order:
         orders=[]
         for order_file_name in order_file_names:
             order =Order()
-            Item.__get_order_by_path(
-                order,f"{__order_folder__}/{order_file_names}")
-            orders.append(order)
+            valus=Order.__get_order_by_path(
+                order,f"{__order_folder__}/{order_file_name}")
+            orders.append(valus)
         return orders
 
 
     def __get_order_by_path(order, path):
         with open(path, "r") as order_file:
             _data_ = json.load(order_file)
+            return _data_
 
     def search(self, key, value):
         orders = self.all()
@@ -297,7 +309,21 @@ if __name__ == "__main__":
 
 
     if section_name == "Order":
-        print("Order")
+        sub_section_order = input("Plz enter All/Create/Serach/View")
+
+        if sub_section_order == "Create":
+            od_item_id=input("item id")
+            od_item_name=input("item name")
+            od_item_tot_QTY=input("tot QTY")
+            od_itm_tot_price=input("tot price")
+            order_create(od_item_id,od_item_name,od_item_tot_QTY,od_itm_tot_price)
+
+        elif sub_section_order == "All":
+            order_all()
+
+        elif sub_section_order== "View":
+            id=input("Plz input Id")
+            order_view(id)
 
     if section_name == "Customer":
         sub_section_customer=input("Plz enter All/Create/Serach/View")

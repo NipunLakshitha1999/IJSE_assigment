@@ -161,6 +161,7 @@ class Order:
             id=1
         _data_ = {
             "id": id,
+            "customerId":self.customerId,
             "itemId": self.itemId,
             "itemName": self.itemName,
             "totQTY": self.totQTY,
@@ -254,8 +255,9 @@ def customer_view(id):
     pprint(customer.name.__str__)
 
 
-def order_create(itemId,itemName,totQTY,totPrice):
+def order_create(customerId,itemId,itemName,totQTY,totPrice):
     order = Order()
+    order.customerId=customerId
     order.itemId = itemId
     order.itemName = itemName
     order.totQTY=totQTY
@@ -312,11 +314,12 @@ if __name__ == "__main__":
         sub_section_order = input("Plz enter All/Create/Serach/View")
 
         if sub_section_order == "Create":
+            od_customer_id =input("customer id")
             od_item_id=input("item id")
             od_item_name=input("item name")
             od_item_tot_QTY=input("tot QTY")
             od_itm_tot_price=input("tot price")
-            order_create(od_item_id,od_item_name,od_item_tot_QTY,od_itm_tot_price)
+            order_create(od_customer_id,od_item_id,od_item_name,od_item_tot_QTY,od_itm_tot_price)
 
         elif sub_section_order == "All":
             order_all()

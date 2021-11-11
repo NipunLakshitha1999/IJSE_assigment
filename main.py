@@ -327,6 +327,10 @@ if __name__ == "__main__":
         elif sub_section_order== "View":
             id=input("Plz input Id")
             order_view(id)
+        elif sub_section_order=="Search":
+            key=input("key")
+            value=input("value")
+            order_search(key,value)
 
     if section_name == "Customer":
         sub_section_customer=input("Plz enter All/Create/Serach/View")

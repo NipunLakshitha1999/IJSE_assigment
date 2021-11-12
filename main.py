@@ -62,17 +62,6 @@ class Item:
             item.sellingPrice=_data_["sellingPrice"]
             return _data_
 
-    def search(self, key, value):
-        items = self.all()
-        result_items = []
-        for item in items:
-            print(item["id"])
-            item_value = getattr(item, key.__str__())
-            print(item_value)
-            if item_value == value:
-                result_items.append(item)
-        return result_items
-
     def find(self, id):
         Item.__get_item_by_path(self, f"{__item_folder__}/{id}.db")
 
@@ -131,15 +120,6 @@ class Customer:
             customer.tel=_data_["tel"]
             return _data_
 
-    def search(self, key, value):
-        customers = self.all()
-        result_customers = []
-        for customer in customers:
-            customer_value = getattr(customer, key)
-            print(customer_value)
-            if customer_value == value:
-                result_customers.append(customer)
-        return result_customers
 
     def find(self, id):
         Customer.__get_customer_by_path(self, f"{__customer_folder__}/{id}.db")
@@ -193,17 +173,14 @@ class Order:
     def __get_order_by_path(order, path):
         with open(path, "r") as order_file:
             _data_ = json.load(order_file)
+            order.id=_data_["id"]
+            order.customerId=_data_["customerId"]
+            order.itemId=_data_["itemId"]
+            order.itemName=_data_["itemName"]
+            order.totQTY=_data_["totQTY"]
+            order.totPrice=_data_["totPrice"]
             return _data_
 
-    def search(self, key, value):
-        orders = self.all()
-        result_orders = []
-        for order in orders:
-            order_value = getattr(order, key)
-            print(order_value)
-            if order_value == value:
-                result_orders.append(order)
-        return result_orders
 
     def find(self, id):
         Order.__get_order_by_path(self, f"{__order_folder__}/{id}.db")
@@ -221,15 +198,13 @@ def item_all():
     items=item.all()
     pprint(items.__str__())
 
-def item_search(key,value):
-    item = Item()
-    results = item.search(key,value)
-    pprint(results.__str__())
 
 def item_view(id):
     item=Item()
     item.find(id)
     pprint(item.name.__str__())
+    pprint(item.price.__str__())
+    pprint(item.sellingPrice.__str__())
 
 
 def customer_create(name,address,tel):
@@ -244,15 +219,13 @@ def customer_all():
     customers = customer.all()
     pprint(customers)
 
-def customer_search(key,value):
-    customer = Customer()
-    results = customer.search(key,value)
-    pprint(results)
 
 def customer_view(id):
     customer = Customer()
     customer.find(id)
-    pprint(customer.name.__str__)
+    pprint(customer.name)
+    pprint(customer.address)
+    pprint(customer.tel)
 
 
 def order_create(customerId,itemId,itemName,totQTY,totPrice):
@@ -271,49 +244,76 @@ def order_all():
     pprint(orders)
 
 
-def order_search(key, value):
-    order = Order()
-    results = order.search(key, value)
-    pprint(results)
-
-
 def order_view(id):
     order = Order()
     order.find(id)
-    pprint(order.id.__str__)
+    pprint(order.itemId)
+    pprint(order.itemName)
+    pprint(order.totQTY)
+    pprint(order.totPrice)
+    pprint(order.customerId)
 
 
 if __name__ == "__main__":
-    section_name=input("Enter Section Name(Item/Order/Customer)")
 
-    if section_name == "Item":
-        sub_section_item=input("Plz enter All/Save/Serach/View")
+    sesion_name=input("Admin/User")
 
-        if sub_section_item == "Save":
-            print("Plz Enter Item Details:-")
-            item_name=input("Item Name")
-            item_price=input("Item Price")
-            item_selling_price=input("Item Selling Price")
-            item_create(item_name,item_price,item_selling_price)
+    if sesion_name == "Admin":
+        section_name=input("Enter Section Name(Item/Order/Customer)")
 
-        elif sub_section_item == "All":
+        if section_name == "Item":
+            sub_section_item=input("Plz enter All/Save/View")
+
+            if sub_section_item == "Save":
+                print("Plz Enter Item Details:-")
+                item_name=input("Item Name")
+                item_price=input("Item Price")
+                item_selling_price=input("Item Selling Price")
+                item_create(item_name,item_price,item_selling_price)
+
+            elif sub_section_item == "All":
+                item_all()
+
+            elif sub_section_item== "View":
+                id=input("Plz input Id")
+                item_view(id)
+
+        if section_name == "Order":
+            sub_section_order = input("Plz enter All/View")
+
+            if sub_section_order == "All":
+                order_all()
+
+            elif sub_section_order== "View":
+                id=input("Plz input Id")
+                order_view(id)
+
+        if section_name == "Customer":
+            sub_section_customer=input("Plz enter All/Create/View")
+
+            if sub_section_customer == "Create":
+                print("Plz Enter Customer Details:-")
+                customer_name=input("Customer Name")
+                customer_address=input("Customer Address")
+                customer_tel=input("Customer Tel")
+                customer_create(customer_name,customer_address,customer_tel)
+
+            elif sub_section_customer == "All":
+                customer_all()
+
+
+            elif sub_section_customer== "View":
+                id=input("Plz input Id")
+                customer_view(id)
+
+
+    elif sesion_name == "User":
+        user_session = input("View_All_Item/Create_Order/View_all_Order")
+
+        if user_session == "View_All_Item":
             item_all()
 
-        elif sub_section_item== "Search":
-            key=input("Key")
-            value=input("Value")
-            item_search(key,value)
-
-        elif sub_section_item== "View":
-            id=input("Plz input Id")
-            item_view(id)
-
-
-
-    if section_name == "Order":
-        sub_section_order = input("Plz enter All/Create/Serach/View")
-
-        if sub_section_order == "Create":
+        elif user_session == "Create_Order":
             od_customer_id =input("customer id")
             od_item_id=input("item id")
             od_item_name=input("item name")
@@ -321,37 +321,5 @@ if __name__ == "__main__":
             od_itm_tot_price=input("tot price")
             order_create(od_customer_id,od_item_id,od_item_name,od_item_tot_QTY,od_itm_tot_price)
 
-        elif sub_section_order == "All":
+        elif user_session == "View_all_Order":
             order_all()
-
-        elif sub_section_order== "View":
-            id=input("Plz input Id")
-            order_view(id)
-        elif sub_section_order=="Search":
-            key=input("key")
-            value=input("value")
-            order_search(key,value)
-
-    if section_name == "Customer":
-        sub_section_customer=input("Plz enter All/Create/Serach/View")
-
-        if sub_section_customer == "Create":
-            print("Plz Enter Customer Details:-")
-            customer_name=input("Customer Name")
-            customer_address=input("Customer Address")
-            customer_tel=input("Customer Tel")
-            customer_create(customer_name,customer_address,customer_tel)
-
-        elif sub_section_customer == "All":
-            customer_all()
-
-        elif sub_section_customer== "Search":
-            key=input("Key")
-            value=input("Value")
-            customer_search(key,value)
-
-        elif sub_section_customer== "View":
-            id=input("Plz input Id")
-            customer_view(id)
-
-
